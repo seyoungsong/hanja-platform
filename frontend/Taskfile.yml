@@ -1,0 +1,90 @@
+version: "3"
+
+tasks:
+  install:
+    desc: Install all dependencies
+    cmds:
+      - rm -rf package-lock.json
+      - npm install --verbose
+
+  dev:
+    desc: Start development server
+    cmds:
+      - npm run dev
+
+  build:
+    desc: Build the application
+    cmds:
+      - npm run build
+
+  start:
+    desc: Start production server
+    cmds:
+      - NODE_ENV=production npm run start
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf build
+      - rm -rf node_modules/.cache
+      - rm -rf public/build
+
+  lint:
+    desc: Run ESLint
+    cmds:
+      - npm run lint
+
+  format:
+    desc: Format code with Prettier
+    cmds:
+      - npx prettier --write --ignore-path .gitignore "**/*.{js,jsx,ts,tsx,css,md,json,mjs,cjs}"
+
+  deps:update:
+    desc: Update dependencies
+    cmds:
+      - npm update
+      - task: install
+
+  deps:check:
+    desc: Check for outdated dependencies
+    cmds:
+      - npm outdated
+
+  typecheck:
+    desc: Run TypeScript type checking
+    cmds:
+      - npx tsc --noEmit
+
+  validate:
+    desc: Run all validations
+    cmds:
+      - task: lint
+      - task: typecheck
+
+  # Development shortcuts
+  d:
+    desc: Shortcut for dev
+    cmds:
+      - task: dev
+
+  b:
+    desc: Shortcut for build
+    cmds:
+      - task: build
+
+  f:
+    desc: Shortcut for format
+    cmds:
+      - task: format
+
+  fl:
+    desc: format and lint
+    cmds:
+      - task: format
+      - task: validate
+
+  bs:
+    desc: build and start
+    cmds:
+      - task: build
+      - task: start

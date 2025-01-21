@@ -1,0 +1,11 @@
+{
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "semi": false,
+  "singleQuote": false,
+  "tabWidth": 2,
+  "tailwindConfig": "./tailwind.config.ts",
+  "trailingComma": "all",
+  "useTabs": false
+}

@@ -1,0 +1,47 @@
+(tls-encode) {
+	tls /certs/fullchain.pem /certs/key.pem
+	encode zstd gzip
+}
+
+# https://demo.hanja.dev
+demo.hanja.dev:{$PORT} {
+	# reverse_proxy hanja-demo:8000
+	reverse_proxy host.docker.internal:7809
+	import tls-encode
+}
+
+# https://beta.hanja.dev
+beta.hanja.dev:{$PORT} {
+	reverse_proxy host.docker.internal:7808
+	import tls-encode
+}
+
+# https://api.hanja.dev
+api.hanja.dev:{$PORT} {
+	reverse_proxy host.docker.internal:7807
+	import tls-encode
+}
+
+# https://vllm.hanja.dev
+vllm.hanja.dev:{$PORT} {
+	reverse_proxy host.docker.internal:7806
+	import tls-encode
+}
+
+# https://mini.hanja.dev
+mini.hanja.dev:{$PORT} {
+	reverse_proxy host.docker.internal:7805
+	import tls-encode
+}
+
+# https://umami.hanja.dev
+umami.hanja.dev:{$PORT} {
+	reverse_proxy umami:3000
+	import tls-encode
+}
+
+# https://pocketbase.hanja.dev/_/
+pocketbase.hanja.dev:{$PORT} {
+	reverse_proxy pocketbase:8080
+	import tls-encode
+}

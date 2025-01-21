@@ -1,0 +1,94 @@
+services:
+  caddy:
+    image: caddy:2
+    container_name: hanja-caddy
+    hostname: hanja-caddy
+    restart: unless-stopped
+    ports:
+      - "7833:7833"
+      - "7833:7833/udp"
+    environment:
+      PORT: 7833
+    labels:
+      - "sh.acme.autoload.domain=hanja.dev"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./compose-data/caddy-config:/config
+      - ./compose-data/caddy-data:/data
+      - ./compose-data/acme-certs:/certs:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  acme.sh:
+    image: neilpang/acme.sh
+    container_name: hanja-acme
+    hostname: hanja-acme
+    restart: unless-stopped
+    environment:
+      - CF_Token=${CF_TOKEN}
+      - CF_Zone_ID=${CF_ZONE_ID}
+      - DEPLOY_DOCKER_CONTAINER_LABEL="sh.acme.autoload.domain=hanja.dev"
+      - DEPLOY_DOCKER_CONTAINER_CERT_FILE=/certs/cert.pem
+      - DEPLOY_DOCKER_CONTAINER_KEY_FILE=/certs/key.pem
+      - DEPLOY_DOCKER_CONTAINER_CA_FILE=/certs/ca.pem
+      - DEPLOY_DOCKER_CONTAINER_FULLCHAIN_FILE=/certs/fullchain.pem
+      - DEPLOY_DOCKER_CONTAINER_RELOAD_CMD="caddy reload"
+    volumes:
+      - ./compose-data/acme-data:/acme.sh
+      - ./compose-data/acme-certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: daemon
+
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: hanja-cloudflared
+    hostname: hanja-cloudflared
+    restart: unless-stopped
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: hanja-umami
+    hostname: hanja-umami
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://umami:umami@umami-db:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET}
+    depends_on:
+      umami-db:
+        condition: service_healthy
+
+  umami-db:
+    image: postgres:15-alpine
+    container_name: hanja-umami-db
+    hostname: hanja-umami-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami
+    volumes:
+      - ./compose-data/umami-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pocketbase:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.pocketbase
+    container_name: hanja-pocketbase
+    hostname: hanja-pocketbase
+    restart: unless-stopped
+    volumes:
+      - "./compose-data/pocketbase-data:/pb/pb_data"
+      - "./compose-data/pocketbase-public:/pb/pb_public"
+      - "./compose-data/pocketbase-hooks:/pb/pb_hooks"
+      - "./compose-data/pocketbase-migrations:/pb/pb_migrations"
