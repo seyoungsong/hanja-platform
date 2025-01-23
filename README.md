@@ -1,6 +1,6 @@
 # 🏛️ HERITAGE: Making Korean Historical Documents Accessible Through AI
 
-Official code for the paper "HERITAGE: An End-to-End Web Platform for Processing Korean Historical Documents in Hanja". If you use this code, please cite our paper.
+Official code for the paper ["HERITAGE: An End-to-End Web Platform for Processing Korean Historical Documents in Hanja"](https://arxiv.org/abs/2501.11951). If you use this code, please cite our paper.
 
 ## Web-based Platform
 
