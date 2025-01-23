@@ -58,7 +58,16 @@ You can find more detailed deployment instructions in the [`deployment`](./deplo
 If you use our toolkit, we'd appreciate if you cite our paper:
 
 ```bibtex
-[Citation will be added after publication]
+@article{song2025heritage,
+  title         = {HERITAGE: An End-to-End Web Platform for Processing Korean Historical Documents in Hanja},
+  author        = {Seyoung Song and Haneul Yoo and Jiho Jin and Kyunghyun Cho and Alice Oh},
+  year          = {2025},
+  eprint        = {2501.11951},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2501.11951},
+  journal       = {arXiv preprint arXiv:2501.11951}
+}
 ```
 
 ## License
